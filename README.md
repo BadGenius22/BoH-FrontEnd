@@ -6,16 +6,12 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][https://www.linkedin.com/in/dewaxindo/]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/BadGenius22/BoH-FrontEnd">
-    <img src="https://imgur.com/UtdSmQ7" alt="Logo" width="80" height="80">
+    <img src="https://github.com/BadGenius22/BoH-FrontEnd/blob/main/src/assets/logo.svg" alt="Logo" width="502" height="295">
   </a>
 
   <h3 align="center">Best-README-Template</h3>
