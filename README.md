@@ -7,16 +7,15 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 [![MIT License][license-shield]][license-url]
-[![Twitter][twitter-shield]][linkedin-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![LinkedIn][linkedin-shield]][https://www.linkedin.com/in/dewaxindo/]
 
 
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/BadGenius22/BoH-FrontEnd">
+    <img src="https://imgur.com/UtdSmQ7" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Best-README-Template</h3>
