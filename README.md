@@ -63,7 +63,23 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+Homepage
+
+  <a href="https://github.com/BadGenius22/BoH-FrontEnd">
+    <img src="https://github.com/BadGenius22/BoH-FrontEnd/blob/main/screenshot/homepage.png" alt="Home" width="1080" height="500">
+  </a>
+  
+ Battleground
+
+  <a href="https://github.com/BadGenius22/BoH-FrontEnd">
+    <img src="https://github.com/BadGenius22/BoH-FrontEnd/blob/main/screenshot/battleground.png" alt="Home" width="1080" height="500">
+  </a>
+ 
+  Arena
+
+  <a href="https://github.com/BadGenius22/BoH-FrontEnd">
+    <img src="https://github.com/BadGenius22/BoH-FrontEnd/blob/main/screenshot/arena.png" alt="Home" width="1080" height="500">
+  </a>
 
 There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
 
