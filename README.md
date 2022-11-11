@@ -17,7 +17,7 @@
   <h3 align="center">Best-README-Template</h3>
 
   <p align="center">
-    An Ultimate Web3 Battle Card Game. Implements Chainlink VRFV2 & Chainlink Automation on Polygon Mumbai Testnet.
+    An Ultimate Web3 Battle Card Game.
     <br />
     <a href="https://github.com/BadGenius22/BoH-FrontEnd"><strong>Explore the docs »</strong></a>
     <br />
@@ -46,13 +46,10 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -81,16 +78,9 @@ Homepage
     <img src="https://github.com/BadGenius22/BoH-FrontEnd/blob/main/screenshot/arena.png" alt="Home" width="1080" height="500">
   </a>
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+This game is made for Chainlink Hackathon Fall 2022. Implements Chainlink VRFV2 & Chainlink Automation to generate rundom numbers Attack & Defend strength of the battle card. Thanks to those Chainlink technology, make the game untamperable in random numbers generated in a decentralized way, creating fair RNG for players.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -102,47 +92,37 @@ This section should list any major frameworks/libraries used to bootstrap your p
 
 * [![Next][Next.js]][Next-url]
 * [![React][React.js]][React-url]
+* [![Hardhat][Hardhat]][Hardhat-url]
 * [![Javascript][Javascript]][Javascript-url]
 * [![Typescript][Typescript]][Typescript-url]
 * [![Solidity][Solidity]][Solidity-url]
 * [![Chainlink][Chainlink]][Chainlink-url]
+* [![OpenZeppelin][OpenZeppelin]][OpenZeppelin-url]
+* [![Polygon][Polygon]][Polygon-url]
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Blockchain
+
 
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Go to ... to try play the game.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+Before you can play the game you must:
 
-### Installation
+* Install Metamask Wallet first in your browser.
+ https://metamask.io/
+* Add Polygon Mumbai Testnet into your Metamask Wallet. 
+https://medium.com/stakingbits/how-to-connect-polygon-mumbai-testnet-to-metamask-fc3487a3871f
+* Get MATIC Token(for Gas fee) for free here: https://faucet.polygon.technology/
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -151,29 +131,70 @@ _Below is an example of how you can instruct your audience on installing and set
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Implementation of Chainlink VRFV2 & Chainlink Automation code:
+```
+ /*
+     * @dev This is the function that the Chainlink Keeper nodes call
+     * they look for `upkeepNeeded` to return True.
+     */
+    function checkUpkeep(
+        bytes memory /*checkData*/
+    )
+        public
+        view
+        override
+        returns (
+            bool upkeepNeeded,
+            bytes memory /*performData*/
+        )
+    {
+        bool timePassed = ((block.timestamp - s_lastTimestamp) > i_interval);
+        bool hasPlayers = players.length > 1;
+        bool hasBattles = battles.length > 1;
+        upkeepNeeded = (timePassed && hasPlayers && hasBattles);
+        return (upkeepNeeded, "Checked!"); // can we comment this out?
+    }
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+    function performUpkeep(
+        bytes calldata /* performData */
+    ) external override {
+        (bool upkeepNeeded, ) = checkUpkeep("");
+        if (!upkeepNeeded) {
+            revert Battle__UpkeepNotNeeded(
+                address(this).balance,
+                players.length,
+                battles.length
+            );
+        }
+        s_battleStatus = BattleStatus.STARTED;
+        uint256 requestId = i_vrfCoordinator.requestRandomWords(
+            i_gasLane,
+            i_subscriptionId,
+            REQUEST_CONFIRMATIONS,
+            i_maxGasLimit,
+            NUM_WORDS
+        );
+        emit RequestSent(requestId);
+    }
+
+    /// @dev chainlink oracle function to generate random number; used for Battle Card Attack and Defense Strength
+    function fulfillRandomWords(uint256, uint256[] memory randomWords)
+        internal
+        override
+    {
+        uint256 randomValue = (randomWords[0] % MAX_ATTACK_DEFEND_STRENGTH) + 1;
+        uint256 randomValue2 = (randomWords[1] % MAX_ATTACK_DEFEND_STRENGTH) +
+            1;
+        s_randomValue = randomValue;
+        s_randomValue2 = randomValue2;
+        s_lastTimestamp = block.timestamp;
+        emit RequestFulfilled(randomValue, randomValue2);
+    }
+```
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- CONTRIBUTING -->
@@ -194,39 +215,31 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Dewangga Praxindo - [@dewaxindo](https://twitter.com/dewaxindo) - badgenius.crypto@gmail.com
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: 
+* Front-End: [https://github.com/BadGenius22/BoH-FrontEnd](https://github.com/BadGenius22/BoH-FrontEnd)
+* Back-End(Smart-Contract):[https://github.com/BadGenius22/BoH-BackEnd](https://github.com/BadGenius22/BoH-BackEnd)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
+ Useful resources & tutorials I find helpful.
 
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
+* [Chainlink VRFV2 Docs](https://docs.chain.link/docs/vrf/v2/introduction/)
+* [Chainlink Automation Docs](https://docs.chain.link/docs/chainlink-automation/introduction/)
+* [Patrick Collins](https://github.com/PatrickAlphaC)
+* [Full Stack Web3 Development Course](https://www.youtube.com/watch?v=gyMwXuJrbJQ)
+* [Adrian Hajdin](https://github.com/adrianhajdin)
+* [Chainlink Hackaton](https://chainlinkfall2022.devpost.com/)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -279,7 +292,11 @@ Use this space to list resources you find helpful and would like to give credit 
 [Instagram-url]: https://www.instagram.com/dewaxindo/
 [Devpost]: https://img.shields.io/badge/Devpost-003E54?style=for-the-badge&logo=Devpost&logoColor=white
 [Devpost-url]: https://devpost.com/BadGenius22?ref_content=user-portfolio&ref_feature=portfolio&ref_medium=global-nav
-[Tiktok]: https://img.shields.io/badge/TikTok-000000?style=for-the-badge&logo=tiktok&logoColor=white
-[Tiktok-url]: 
 [Telegram]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white
 [Telegram-url]: https://t.me/dewaxindo
+[Polygon]: https://tinyurl.com/ys9yfcpw
+[Polygon-url]: https://polygon.technology/
+[Hardhat]: https://tinyurl.com/yjs68jbs
+[Hardhat-url]: https://hardhat.org/
+[OpenZeppelin]: https://img.shields.io/badge/OpenZeppelin-4E5EE4?logo=OpenZeppelin&logoColor=fff&style=for-the-badge
+[OpenZeppelin-url]: https://www.openzeppelin.com/
